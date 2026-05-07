@@ -393,6 +393,13 @@ struct SettingsView: View {
                         saveConfirmation = false
                     }
                 }
+                Button {
+                    passwordList = PasswordStore.load().joined(separator: "\n")
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .buttonStyle(.borderless)
+                .help("Reload from Keychain (pull latest from iCloud)")
                 if saveConfirmation {
                     Text("Saved \u{2713}")
                         .foregroundColor(.secondary)
