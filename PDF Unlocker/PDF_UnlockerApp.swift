@@ -123,6 +123,9 @@ enum PasswordStore {
 struct PDFUnlockerApp: App {
     @StateObject private var fileWatcherManager = FileWatcherManager()
 
+    init() {
+        _ = PasswordStore.load()
+    }
 
     var body: some Scene {
         MenuBarExtra {
@@ -462,6 +465,9 @@ struct SettingsView: View {
                 .padding(.bottom, 16)
         }
         .frame(width: 320, height: 540)
+        .onAppear {
+            passwordList = PasswordStore.load().joined(separator: "\n")
+        }
     }
 
     private func chooseFolder() {
