@@ -119,9 +119,33 @@ enum PasswordStore {
     }
 }
 
+@MainActor
+final class AppearanceObserver: ObservableObject {
+    @Published var isDark: Bool = AppearanceObserver.detectDark()
+    private var token: NSObjectProtocol?
+
+    init() {
+        token = DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name("AppleInterfaceThemeChangedNotification"),
+            object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.isDark = AppearanceObserver.detectDark()
+        }
+    }
+
+    deinit {
+        if let token { DistributedNotificationCenter.default().removeObserver(token) }
+    }
+
+    private static func detectDark() -> Bool {
+        NSApp?.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    }
+}
+
 @main
 struct PDFUnlockerApp: App {
     @StateObject private var fileWatcherManager = FileWatcherManager()
+    @StateObject private var appearance = AppearanceObserver()
 
     init() {
         _ = PasswordStore.load()
@@ -145,7 +169,7 @@ struct PDFUnlockerApp: App {
             }
             .padding()
         } label: {
-            Image(nsImage: Self.menuBarIcon(monitoring: fileWatcherManager.isMonitoring))
+            Image(nsImage: Self.menuBarIcon(monitoring: fileWatcherManager.isMonitoring, dark: appearance.isDark))
                 .accessibilityLabel("PDF Unlocker")
         }
 
@@ -154,10 +178,11 @@ struct PDFUnlockerApp: App {
         }
     }
 
-    private static func menuBarIcon(monitoring: Bool) -> NSImage {
+    private static func menuBarIcon(monitoring: Bool, dark: Bool) -> NSImage {
         let symbolName = "lock.doc"
+        let lockColor: NSColor = dark ? .white : .black
         let cfg = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
-            .applying(.init(paletteColors: [.labelColor]))
+            .applying(.init(paletteColors: [lockColor]))
         let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
             .withSymbolConfiguration(cfg) ?? NSImage()
         let symbolSize = symbol.size
@@ -174,7 +199,7 @@ struct PDFUnlockerApp: App {
         )
         (monitoring ? NSColor.systemGreen : NSColor.systemRed).setFill()
         NSBezierPath(ovalIn: dotRect).fill()
-        NSColor.windowBackgroundColor.withAlphaComponent(0.6).setStroke()
+        (dark ? NSColor.black : NSColor.white).withAlphaComponent(0.5).setStroke()
         let stroke = NSBezierPath(ovalIn: dotRect.insetBy(dx: 0.25, dy: 0.25))
         stroke.lineWidth = 0.5
         stroke.stroke()
