@@ -9,35 +9,22 @@ import CryptoKit
 
 private let monitoredFolderBookmarkKey = "monitoredFolderBookmark"
 private let openUnencryptedPDFsKey = "openUnencryptedPDFs"
-let iCloudSyncEnabledKey = "iCloudKeychainSyncEnabled"
+private let legacyiCloudSyncEnabledKey = "iCloudKeychainSyncEnabled"
 
 enum PasswordStore {
     private static let service = "com.rtcamp.PDFUnlocker"
     private static let legacyBlobAccount = "passwordList"
     private static let legacyDefaultsKey = "passwordList"
 
-    static var isSyncEnabled: Bool {
-        UserDefaults.standard.bool(forKey: iCloudSyncEnabledKey)
-    }
-
-    static func setSyncEnabled(_ enabled: Bool) {
-        let was = isSyncEnabled
-        UserDefaults.standard.set(enabled, forKey: iCloudSyncEnabledKey)
-        guard was != enabled else { return }
-        migrateBetweenScopes(toSync: enabled)
-    }
-
     static func load() -> [String] {
         runMigrationsIfNeeded()
-        let scope = isSyncEnabled
-        return readAll(sync: scope).sorted()
+        return readAll(sync: true).sorted()
     }
 
     static func save(_ passwords: [String]) {
-        let scope = isSyncEnabled
-        deleteAll(sync: scope)
+        deleteAll(sync: true)
         for pwd in passwords where !pwd.isEmpty {
-            addItem(password: pwd, sync: scope)
+            addItem(password: pwd, sync: true)
         }
     }
 
@@ -91,12 +78,6 @@ enum PasswordStore {
         SecItemDelete(q as CFDictionary)
     }
 
-    private static func migrateBetweenScopes(toSync: Bool) {
-        let from = readAll(sync: !toSync)
-        for pwd in from { addItem(password: pwd, sync: toSync) }
-        deleteAll(sync: !toSync)
-    }
-
     private static func runMigrationsIfNeeded() {
         let q: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -111,7 +92,7 @@ enum PasswordStore {
            let data = item as? Data,
            let str = String(data: data, encoding: .utf8) {
             let list = str.components(separatedBy: "\n").filter { !$0.isEmpty }
-            for pwd in list { addItem(password: pwd, sync: false) }
+            for pwd in list { addItem(password: pwd, sync: true) }
             let del: [CFString: Any] = [
                 kSecClass: kSecClassGenericPassword,
                 kSecAttrService: service,
@@ -122,9 +103,15 @@ enum PasswordStore {
         }
         if let legacy = UserDefaults.standard.string(forKey: legacyDefaultsKey) {
             let list = legacy.components(separatedBy: "\n").filter { !$0.isEmpty }
-            for pwd in list { addItem(password: pwd, sync: false) }
+            for pwd in list { addItem(password: pwd, sync: true) }
             UserDefaults.standard.removeObject(forKey: legacyDefaultsKey)
         }
+        let localItems = readAll(sync: false)
+        if !localItems.isEmpty {
+            for pwd in localItems { addItem(password: pwd, sync: true) }
+            deleteAll(sync: false)
+        }
+        UserDefaults.standard.removeObject(forKey: legacyiCloudSyncEnabledKey)
     }
 
     private static func sha256Hex(_ s: String) -> String {
@@ -400,7 +387,6 @@ struct SettingsView: View {
     @ObservedObject var fileWatcherManager: FileWatcherManager
     @State private var passwordList: String = PasswordStore.load().joined(separator: "\n")
     @State private var openUnencrypted: Bool = (UserDefaults.standard.object(forKey: openUnencryptedPDFsKey) as? Bool) ?? true
-    @State private var iCloudSync: Bool = PasswordStore.isSyncEnabled
     @State private var saveConfirmation = false
 
     var body: some View {
@@ -430,10 +416,6 @@ struct SettingsView: View {
                         saveConfirmation = false
                     }
                 }
-                Button("Sync Now") {
-                    passwordList = PasswordStore.load().joined(separator: "\n")
-                }
-                .help("Reload passwords from Keychain (pull latest from iCloud)")
                 if saveConfirmation {
                     Text("Saved \u{2713}")
                         .foregroundColor(.secondary)
@@ -474,18 +456,6 @@ struct SettingsView: View {
                     UserDefaults.standard.set(newValue, forKey: openUnencryptedPDFsKey)
                 }
                 .padding(.horizontal, 20)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Toggle("Sync passwords via iCloud Keychain", isOn: $iCloudSync)
-                    .onChange(of: iCloudSync) { newValue in
-                        PasswordStore.setSyncEnabled(newValue)
-                        passwordList = PasswordStore.load().joined(separator: "\n")
-                    }
-                Text("Encrypted end-to-end. Requires iCloud Keychain enabled in System Settings.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 20)
 
             LaunchAtLogin.Toggle()
                 .padding(.horizontal, 20)
