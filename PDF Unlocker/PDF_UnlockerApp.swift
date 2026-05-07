@@ -4,9 +4,58 @@ import FileWatcher
 import PDFKit
 import SettingsAccess
 import AppKit
+import Security
 
 private let monitoredFolderBookmarkKey = "monitoredFolderBookmark"
 private let openUnencryptedPDFsKey = "openUnencryptedPDFs"
+
+enum PasswordStore {
+    private static let service = "com.rtcamp.PDFUnlocker"
+    private static let account = "passwordList"
+    private static let legacyDefaultsKey = "passwordList"
+
+    static func load() -> [String] {
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecAttrAccount: account,
+            kSecReturnData: true,
+            kSecMatchLimit: kSecMatchLimitOne,
+        ]
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        if status == errSecSuccess,
+           let data = item as? Data,
+           let str = String(data: data, encoding: .utf8) {
+            return str.components(separatedBy: "\n").filter { !$0.isEmpty }
+        }
+        if let legacy = UserDefaults.standard.string(forKey: legacyDefaultsKey) {
+            let list = legacy.components(separatedBy: "\n").filter { !$0.isEmpty }
+            if !list.isEmpty {
+                save(list)
+                UserDefaults.standard.removeObject(forKey: legacyDefaultsKey)
+                return list
+            }
+            UserDefaults.standard.removeObject(forKey: legacyDefaultsKey)
+        }
+        return []
+    }
+
+    static func save(_ passwords: [String]) {
+        let baseQuery: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecAttrAccount: account,
+        ]
+        SecItemDelete(baseQuery as CFDictionary)
+        guard !passwords.isEmpty,
+              let blob = passwords.joined(separator: "\n").data(using: .utf8) else { return }
+        var add = baseQuery
+        add[kSecValueData] = blob
+        add[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
+        SecItemAdd(add as CFDictionary, nil)
+    }
+}
 
 @main
 struct PDFUnlockerApp: App {
@@ -168,8 +217,7 @@ class FileWatcherManager: ObservableObject {
 }
 
 func processPDF(fileName: String, manager: FileWatcherManager? = nil) {
-    let passwordList = UserDefaults.standard.string(forKey: "passwordList") ?? ""
-    let passwords = passwordList.components(separatedBy: "\n").filter { !$0.isEmpty }
+    let passwords = PasswordStore.load()
 
     let fileURL = URL(fileURLWithPath: fileName)
     let fileManager = FileManager.default
@@ -238,7 +286,7 @@ func saveUnlockedPDF(originalURL: URL, unlockedDocument: PDFDocument) -> Bool {
 
 struct SettingsView: View {
     @ObservedObject var fileWatcherManager: FileWatcherManager
-    @State private var passwordList: String = UserDefaults.standard.string(forKey: "passwordList") ?? ""
+    @State private var passwordList: String = PasswordStore.load().joined(separator: "\n")
     @State private var openUnencrypted: Bool = (UserDefaults.standard.object(forKey: openUnencryptedPDFsKey) as? Bool) ?? true
     @State private var saveConfirmation = false
 
@@ -259,11 +307,11 @@ struct SettingsView: View {
             HStack {
                 Button("Save Passwords") {
                     let cleaned = Array(Set(self.passwordList.components(separatedBy: "\n")))
+                        .map { $0.trimmingCharacters(in: .whitespaces) }
                         .filter { !$0.isEmpty }
                         .sorted()
-                        .joined(separator: "\n")
-                    UserDefaults.standard.set(cleaned, forKey: "passwordList")
-                    self.passwordList = cleaned
+                    PasswordStore.save(cleaned)
+                    self.passwordList = cleaned.joined(separator: "\n")
                     saveConfirmation = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         saveConfirmation = false
