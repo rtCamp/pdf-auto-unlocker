@@ -138,7 +138,7 @@ struct PDFUnlockerApp: App {
 
 
     var body: some Scene {
-        MenuBarExtra("PDF Unlocker", systemImage: "lock.open.rotation") {
+        MenuBarExtra {
             SettingsLink {
                 Text("Settings")
             } preAction: {
@@ -154,11 +154,43 @@ struct PDFUnlockerApp: App {
                 NSApplication.shared.terminate(self)
             }
             .padding()
+        } label: {
+            Image(nsImage: Self.menuBarIcon(monitoring: fileWatcherManager.isMonitoring))
+                .accessibilityLabel("PDF Unlocker")
         }
 
         Settings {
             SettingsView(fileWatcherManager: fileWatcherManager)
         }
+    }
+
+    private static func menuBarIcon(monitoring: Bool) -> NSImage {
+        let symbolName = "lock.doc"
+        let cfg = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+            .applying(.init(paletteColors: [.labelColor]))
+        let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
+            .withSymbolConfiguration(cfg) ?? NSImage()
+        let symbolSize = symbol.size
+        let dotDiameter: CGFloat = 7
+        let canvas = NSSize(width: symbolSize.width + 3, height: symbolSize.height + 1)
+        let img = NSImage(size: canvas)
+        img.lockFocus()
+        symbol.draw(in: NSRect(x: 0, y: 1, width: symbolSize.width, height: symbolSize.height),
+                    from: .zero, operation: .sourceOver, fraction: 1)
+        let dotRect = NSRect(
+            x: canvas.width - dotDiameter,
+            y: canvas.height - dotDiameter,
+            width: dotDiameter, height: dotDiameter
+        )
+        (monitoring ? NSColor.systemGreen : NSColor.systemRed).setFill()
+        NSBezierPath(ovalIn: dotRect).fill()
+        NSColor.windowBackgroundColor.withAlphaComponent(0.6).setStroke()
+        let stroke = NSBezierPath(ovalIn: dotRect.insetBy(dx: 0.25, dy: 0.25))
+        stroke.lineWidth = 0.5
+        stroke.stroke()
+        img.unlockFocus()
+        img.isTemplate = false
+        return img
     }
 }
 
@@ -200,7 +232,12 @@ class FileWatcherManager: ObservableObject {
                 return url
             }
         }
-        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads")
+        return defaultDownloadsURL()
+    }
+
+    static func defaultDownloadsURL() -> URL {
+        let realHome = NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory()
+        return URL(fileURLWithPath: realHome).appendingPathComponent("Downloads")
     }
 
     func setMonitoredFolder(_ url: URL) {
@@ -242,7 +279,7 @@ class FileWatcherManager: ObservableObject {
     }
 
     func setupFileWatcher() -> FileWatcher {
-        let folderURL = monitoredFolderURL ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads")
+        let folderURL = monitoredFolderURL ?? Self.defaultDownloadsURL()
 
         securityScopedURL?.stopAccessingSecurityScopedResource()
         securityScopedURL = nil
@@ -393,16 +430,23 @@ struct SettingsView: View {
                         saveConfirmation = false
                     }
                 }
-                Button {
+                Button("Sync Now") {
                     passwordList = PasswordStore.load().joined(separator: "\n")
-                } label: {
-                    Image(systemName: "arrow.clockwise")
                 }
-                .buttonStyle(.borderless)
-                .help("Reload from Keychain (pull latest from iCloud)")
+                .help("Reload passwords from Keychain (pull latest from iCloud)")
                 if saveConfirmation {
                     Text("Saved \u{2713}")
                         .foregroundColor(.secondary)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 8)
+
+            Button(fileWatcherManager.isMonitoring ? "Stop PDF Monitoring" : "Start PDF Monitoring") {
+                if fileWatcherManager.isMonitoring {
+                    fileWatcherManager.stopFileWatcher()
+                } else {
+                    fileWatcherManager.startFileWatcher()
                 }
             }
             .padding(.horizontal, 20)
@@ -442,16 +486,6 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
             }
             .padding(.horizontal, 20)
-
-            Button(fileWatcherManager.isMonitoring ? "Stop PDF Monitoring" : "Start PDF Monitoring") {
-                if fileWatcherManager.isMonitoring {
-                    fileWatcherManager.stopFileWatcher()
-                } else {
-                    fileWatcherManager.startFileWatcher()
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 8)
 
             LaunchAtLogin.Toggle()
                 .padding(.horizontal, 20)
