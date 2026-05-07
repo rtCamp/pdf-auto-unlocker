@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		103C7D352C4CF5C5003104D5 /* PDF_UnlockerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103C7D342C4CF5C5003104D5 /* PDF_UnlockerApp.swift */; };
-		103C7D472C4CF5C6003104D5 /* PDF_UnlockerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103C7D462C4CF5C6003104D5 /* PDF_UnlockerTests.swift */; };
-		103C7D512C4CF5C6003104D5 /* PDF_UnlockerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103C7D502C4CF5C6003104D5 /* PDF_UnlockerUITests.swift */; };
-		103C7D532C4CF5C6003104D5 /* PDF_UnlockerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103C7D522C4CF5C6003104D5 /* PDF_UnlockerUITestsLaunchTests.swift */; };
 		1079E4382C4E93BB00A737A8 /* FileWatcher in Frameworks */ = {isa = PBXBuildFile; productRef = 1079E4372C4E93BB00A737A8 /* FileWatcher */; };
 		10D1B21B2C4E391700039D1F /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 10D1B21A2C4E391700039D1F /* LaunchAtLogin */; };
 		10E035592E8EB051000F1CF3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10E035582E8EB051000F1CF3 /* Assets.xcassets */; };
@@ -39,10 +36,7 @@
 		103C7D342C4CF5C5003104D5 /* PDF_UnlockerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDF_UnlockerApp.swift; sourceTree = "<group>"; };
 		103C7D3D2C4CF5C6003104D5 /* PDF_Unlocker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PDF_Unlocker.entitlements; sourceTree = "<group>"; };
 		103C7D422C4CF5C6003104D5 /* PDF UnlockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PDF UnlockerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		103C7D462C4CF5C6003104D5 /* PDF_UnlockerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDF_UnlockerTests.swift; sourceTree = "<group>"; };
 		103C7D4C2C4CF5C6003104D5 /* PDF UnlockerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PDF UnlockerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		103C7D502C4CF5C6003104D5 /* PDF_UnlockerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDF_UnlockerUITests.swift; sourceTree = "<group>"; };
-		103C7D522C4CF5C6003104D5 /* PDF_UnlockerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDF_UnlockerUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		10E035582E8EB051000F1CF3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -78,8 +72,6 @@
 			isa = PBXGroup;
 			children = (
 				103C7D332C4CF5C5003104D5 /* PDF Unlocker */,
-				103C7D452C4CF5C6003104D5 /* PDF UnlockerTests */,
-				103C7D4F2C4CF5C6003104D5 /* PDF UnlockerUITests */,
 				103C7D322C4CF5C5003104D5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,23 +94,6 @@
 				10E035582E8EB051000F1CF3 /* Assets.xcassets */,
 			);
 			path = "PDF Unlocker";
-			sourceTree = "<group>";
-		};
-		103C7D452C4CF5C6003104D5 /* PDF UnlockerTests */ = {
-			isa = PBXGroup;
-			children = (
-				103C7D462C4CF5C6003104D5 /* PDF_UnlockerTests.swift */,
-			);
-			path = "PDF UnlockerTests";
-			sourceTree = "<group>";
-		};
-		103C7D4F2C4CF5C6003104D5 /* PDF UnlockerUITests */ = {
-			isa = PBXGroup;
-			children = (
-				103C7D502C4CF5C6003104D5 /* PDF_UnlockerUITests.swift */,
-				103C7D522C4CF5C6003104D5 /* PDF_UnlockerUITestsLaunchTests.swift */,
-			);
-			path = "PDF UnlockerUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -190,7 +165,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					103C7D302C4CF5C5003104D5 = {
 						CreatedOnToolsVersion = 15.4;
@@ -268,7 +243,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				103C7D472C4CF5C6003104D5 /* PDF_UnlockerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,8 +250,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				103C7D532C4CF5C6003104D5 /* PDF_UnlockerUITestsLaunchTests.swift in Sources */,
-				103C7D512C4CF5C6003104D5 /* PDF_UnlockerUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +303,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -355,6 +328,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -394,6 +368,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -411,6 +386,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -425,8 +401,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = FPZ2S6HLD9;
+				DEVELOPMENT_TEAM = F2FZ479BP3;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_FILE_ACCESS_DOWNLOADS_FOLDER = readwrite;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -440,7 +419,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-Unlocker";
+				PRODUCT_BUNDLE_IDENTIFIER = com.rtcamp.PDFUnlocker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -457,8 +436,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = FPZ2S6HLD9;
+				DEVELOPMENT_TEAM = F2FZ479BP3;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_FILE_ACCESS_DOWNLOADS_FOLDER = readwrite;
 				ENABLE_HARDENED_RUNTIME = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -472,7 +454,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-Unlocker";
+				PRODUCT_BUNDLE_IDENTIFIER = com.rtcamp.PDFUnlocker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -482,10 +464,10 @@
 		103C7D5A2C4CF5C6003104D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FPZ2S6HLD9;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.5;
@@ -501,10 +483,10 @@
 		103C7D5B2C4CF5C6003104D5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FPZ2S6HLD9;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.5;
@@ -520,9 +502,9 @@
 		103C7D5D2C4CF5C6003104D5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FPZ2S6HLD9;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -537,9 +519,9 @@
 		103C7D5E2C4CF5C6003104D5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = FPZ2S6HLD9;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
