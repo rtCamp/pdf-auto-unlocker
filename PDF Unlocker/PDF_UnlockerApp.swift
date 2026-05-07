@@ -5,55 +5,130 @@ import PDFKit
 import SettingsAccess
 import AppKit
 import Security
+import CryptoKit
 
 private let monitoredFolderBookmarkKey = "monitoredFolderBookmark"
 private let openUnencryptedPDFsKey = "openUnencryptedPDFs"
+let iCloudSyncEnabledKey = "iCloudKeychainSyncEnabled"
 
 enum PasswordStore {
     private static let service = "com.rtcamp.PDFUnlocker"
-    private static let account = "passwordList"
+    private static let legacyBlobAccount = "passwordList"
     private static let legacyDefaultsKey = "passwordList"
 
+    static var isSyncEnabled: Bool {
+        UserDefaults.standard.bool(forKey: iCloudSyncEnabledKey)
+    }
+
+    static func setSyncEnabled(_ enabled: Bool) {
+        let was = isSyncEnabled
+        UserDefaults.standard.set(enabled, forKey: iCloudSyncEnabledKey)
+        guard was != enabled else { return }
+        migrateBetweenScopes(toSync: enabled)
+    }
+
     static func load() -> [String] {
-        let query: [CFString: Any] = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrService: service,
-            kSecAttrAccount: account,
-            kSecReturnData: true,
-            kSecMatchLimit: kSecMatchLimitOne,
-        ]
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        if status == errSecSuccess,
-           let data = item as? Data,
-           let str = String(data: data, encoding: .utf8) {
-            return str.components(separatedBy: "\n").filter { !$0.isEmpty }
-        }
-        if let legacy = UserDefaults.standard.string(forKey: legacyDefaultsKey) {
-            let list = legacy.components(separatedBy: "\n").filter { !$0.isEmpty }
-            if !list.isEmpty {
-                save(list)
-                UserDefaults.standard.removeObject(forKey: legacyDefaultsKey)
-                return list
-            }
-            UserDefaults.standard.removeObject(forKey: legacyDefaultsKey)
-        }
-        return []
+        runMigrationsIfNeeded()
+        let scope = isSyncEnabled
+        return readAll(sync: scope).sorted()
     }
 
     static func save(_ passwords: [String]) {
-        let baseQuery: [CFString: Any] = [
+        let scope = isSyncEnabled
+        deleteAll(sync: scope)
+        for pwd in passwords where !pwd.isEmpty {
+            addItem(password: pwd, sync: scope)
+        }
+    }
+
+    private static func readAll(sync: Bool) -> [String] {
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecMatchLimit: kSecMatchLimitAll,
+            kSecReturnData: true,
+            kSecReturnAttributes: true,
+            kSecAttrSynchronizable: sync,
+        ]
+        var result: CFTypeRef?
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
+              let items = result as? [[CFString: Any]] else { return [] }
+        return items.compactMap { item in
+            if item[kSecAttrAccount] as? String == legacyBlobAccount { return nil }
+            guard let data = item[kSecValueData] as? Data,
+                  let s = String(data: data, encoding: .utf8) else { return nil }
+            return s
+        }
+    }
+
+    private static func addItem(password: String, sync: Bool) {
+        guard let data = password.data(using: .utf8) else { return }
+        let account = sha256Hex(password)
+        let dq: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrService: service,
             kSecAttrAccount: account,
+            kSecAttrSynchronizable: sync,
         ]
-        SecItemDelete(baseQuery as CFDictionary)
-        guard !passwords.isEmpty,
-              let blob = passwords.joined(separator: "\n").data(using: .utf8) else { return }
-        var add = baseQuery
-        add[kSecValueData] = blob
-        add[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlocked
+        SecItemDelete(dq as CFDictionary)
+        let add: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecAttrAccount: account,
+            kSecValueData: data,
+            kSecAttrSynchronizable: sync,
+            kSecAttrAccessible: sync ? kSecAttrAccessibleAfterFirstUnlock : kSecAttrAccessibleWhenUnlocked,
+        ]
         SecItemAdd(add as CFDictionary, nil)
+    }
+
+    private static func deleteAll(sync: Bool) {
+        let q: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecAttrSynchronizable: sync,
+        ]
+        SecItemDelete(q as CFDictionary)
+    }
+
+    private static func migrateBetweenScopes(toSync: Bool) {
+        let from = readAll(sync: !toSync)
+        for pwd in from { addItem(password: pwd, sync: toSync) }
+        deleteAll(sync: !toSync)
+    }
+
+    private static func runMigrationsIfNeeded() {
+        let q: [CFString: Any] = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrService: service,
+            kSecAttrAccount: legacyBlobAccount,
+            kSecReturnData: true,
+            kSecMatchLimit: kSecMatchLimitOne,
+            kSecAttrSynchronizable: kSecAttrSynchronizableAny,
+        ]
+        var item: CFTypeRef?
+        if SecItemCopyMatching(q as CFDictionary, &item) == errSecSuccess,
+           let data = item as? Data,
+           let str = String(data: data, encoding: .utf8) {
+            let list = str.components(separatedBy: "\n").filter { !$0.isEmpty }
+            for pwd in list { addItem(password: pwd, sync: false) }
+            let del: [CFString: Any] = [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrService: service,
+                kSecAttrAccount: legacyBlobAccount,
+                kSecAttrSynchronizable: kSecAttrSynchronizableAny,
+            ]
+            SecItemDelete(del as CFDictionary)
+        }
+        if let legacy = UserDefaults.standard.string(forKey: legacyDefaultsKey) {
+            let list = legacy.components(separatedBy: "\n").filter { !$0.isEmpty }
+            for pwd in list { addItem(password: pwd, sync: false) }
+            UserDefaults.standard.removeObject(forKey: legacyDefaultsKey)
+        }
+    }
+
+    private static func sha256Hex(_ s: String) -> String {
+        SHA256.hash(data: Data(s.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 }
 
@@ -288,6 +363,7 @@ struct SettingsView: View {
     @ObservedObject var fileWatcherManager: FileWatcherManager
     @State private var passwordList: String = PasswordStore.load().joined(separator: "\n")
     @State private var openUnencrypted: Bool = (UserDefaults.standard.object(forKey: openUnencryptedPDFsKey) as? Bool) ?? true
+    @State private var iCloudSync: Bool = PasswordStore.isSyncEnabled
     @State private var saveConfirmation = false
 
     var body: some View {
@@ -347,6 +423,18 @@ struct SettingsView: View {
                     UserDefaults.standard.set(newValue, forKey: openUnencryptedPDFsKey)
                 }
                 .padding(.horizontal, 20)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Toggle("Sync passwords via iCloud Keychain", isOn: $iCloudSync)
+                    .onChange(of: iCloudSync) { newValue in
+                        PasswordStore.setSyncEnabled(newValue)
+                        passwordList = PasswordStore.load().joined(separator: "\n")
+                    }
+                Text("Encrypted end-to-end. Requires iCloud Keychain enabled in System Settings.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 20)
 
             Button(fileWatcherManager.isMonitoring ? "Stop PDF Monitoring" : "Start PDF Monitoring") {
                 if fileWatcherManager.isMonitoring {
