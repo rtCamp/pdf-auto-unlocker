@@ -6,10 +6,12 @@ import SettingsAccess
 import AppKit
 import Security
 import CryptoKit
+import Combine
 
 private let monitoredFolderBookmarkKey = "monitoredFolderBookmark"
 private let openUnencryptedPDFsKey = "openUnencryptedPDFs"
 private let legacyiCloudSyncEnabledKey = "iCloudKeychainSyncEnabled"
+private let keychainMigrationDoneKey = "keychainMigrationCompleted_v2"
 
 enum PasswordStore {
     private static let service = "com.rtcamp.PDFUnlocker"
@@ -17,7 +19,10 @@ enum PasswordStore {
     private static let legacyDefaultsKey = "passwordList"
 
     static func load() -> [String] {
-        runMigrationsIfNeeded()
+        if !UserDefaults.standard.bool(forKey: keychainMigrationDoneKey) {
+            runMigrationsIfNeeded()
+            UserDefaults.standard.set(true, forKey: keychainMigrationDoneKey)
+        }
         return readAll(sync: true).sorted()
     }
 
@@ -117,101 +122,103 @@ enum PasswordStore {
     private static func sha256Hex(_ s: String) -> String {
         SHA256.hash(data: Data(s.utf8)).map { String(format: "%02x", $0) }.joined()
     }
+
 }
 
-@MainActor
-final class AppearanceObserver: ObservableObject {
-    @Published var isDark: Bool = AppearanceObserver.detectDark()
-    private var token: NSObjectProtocol?
+final class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
+    private let statusItem: NSStatusItem
+    private let watcher: FileWatcherManager
+    private var cancellable: AnyCancellable?
+    private weak var dotView: NSView?
+    private var settingsWindow: NSWindow?
 
-    init() {
-        token = DistributedNotificationCenter.default().addObserver(
-            forName: NSNotification.Name("AppleInterfaceThemeChangedNotification"),
-            object: nil, queue: .main
-        ) { [weak self] _ in
-            self?.isDark = AppearanceObserver.detectDark()
+    init(watcher: FileWatcherManager) {
+        self.watcher = watcher
+        self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        super.init()
+        configureMenu()
+        refresh()
+        cancellable = watcher.$isMonitoring
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in self?.refresh() }
+    }
+
+    private func refresh() {
+        guard let button = statusItem.button else { return }
+        let symbolName = "lock.doc"
+        let img = NSImage(systemSymbolName: symbolName, accessibilityDescription: "PDF Unlocker")
+        img?.isTemplate = true
+        button.image = img
+
+        if dotView == nil {
+            let v = NSView()
+            v.wantsLayer = true
+            v.layer?.cornerRadius = 3
+            v.translatesAutoresizingMaskIntoConstraints = false
+            button.addSubview(v)
+            NSLayoutConstraint.activate([
+                v.widthAnchor.constraint(equalToConstant: 6),
+                v.heightAnchor.constraint(equalToConstant: 6),
+                v.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: -3),
+                v.topAnchor.constraint(equalTo: button.topAnchor, constant: 2),
+            ])
+            dotView = v
         }
+        dotView?.layer?.backgroundColor =
+            (watcher.isMonitoring ? NSColor.systemGreen : NSColor.systemRed).cgColor
     }
 
-    deinit {
-        if let token { DistributedNotificationCenter.default().removeObserver(token) }
+    private func configureMenu() {
+        let menu = NSMenu()
+        let s = NSMenuItem(title: "Settings", action: #selector(openSettings), keyEquivalent: ",")
+        s.target = self
+        menu.addItem(s)
+        menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        statusItem.menu = menu
     }
 
-    private static func detectDark() -> Bool {
-        NSApp?.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    @objc private func openSettings() {
+        if settingsWindow == nil {
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 320, height: 540),
+                styleMask: [.titled, .closable, .miniaturizable],
+                backing: .buffered,
+                defer: false
+            )
+            window.title = "PDF Unlocker Settings"
+            window.contentView = NSHostingView(rootView: SettingsView(fileWatcherManager: watcher))
+            window.isReleasedWhenClosed = false
+            window.center()
+            window.delegate = self
+            settingsWindow = window
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        settingsWindow?.makeKeyAndOrderFront(nil)
     }
 }
 
 @main
 struct PDFUnlockerApp: App {
-    @StateObject private var fileWatcherManager = FileWatcherManager()
-    @StateObject private var appearance = AppearanceObserver()
+    @StateObject private var fileWatcherManager: FileWatcherManager
+    @StateObject private var statusBar: StatusBarController
 
     init() {
+        let w = FileWatcherManager()
+        _fileWatcherManager = StateObject(wrappedValue: w)
+        _statusBar = StateObject(wrappedValue: StatusBarController(watcher: w))
         _ = PasswordStore.load()
     }
 
     var body: some Scene {
-        MenuBarExtra {
-            SettingsLink {
-                Text("Settings")
-            } preAction: {
-                DispatchQueue.main.async {
-                    NSApp.activate(ignoringOtherApps: true)
-                }
-            } postAction: {
-            }.keyboardShortcut(",", modifiers: .command)
-
-            Divider()
-
-            Button("Quit") {
-                NSApplication.shared.terminate(self)
-            }
-            .padding()
-        } label: {
-            Image(nsImage: Self.menuBarIcon(monitoring: fileWatcherManager.isMonitoring, dark: appearance.isDark))
-                .accessibilityLabel("PDF Unlocker")
-        }
-
-        Settings {
-            SettingsView(fileWatcherManager: fileWatcherManager)
-        }
-    }
-
-    private static func menuBarIcon(monitoring: Bool, dark: Bool) -> NSImage {
-        let symbolName = "lock.doc"
-        let lockColor: NSColor = dark ? .white : .black
-        let cfg = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
-            .applying(.init(paletteColors: [lockColor]))
-        let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
-            .withSymbolConfiguration(cfg) ?? NSImage()
-        let symbolSize = symbol.size
-        let dotDiameter: CGFloat = 7
-        let canvas = NSSize(width: symbolSize.width + 3, height: symbolSize.height + 1)
-        let img = NSImage(size: canvas)
-        img.lockFocus()
-        symbol.draw(in: NSRect(x: 0, y: 1, width: symbolSize.width, height: symbolSize.height),
-                    from: .zero, operation: .sourceOver, fraction: 1)
-        let dotRect = NSRect(
-            x: canvas.width - dotDiameter,
-            y: canvas.height - dotDiameter,
-            width: dotDiameter, height: dotDiameter
-        )
-        (monitoring ? NSColor.systemGreen : NSColor.systemRed).setFill()
-        NSBezierPath(ovalIn: dotRect).fill()
-        (dark ? NSColor.black : NSColor.white).withAlphaComponent(0.5).setStroke()
-        let stroke = NSBezierPath(ovalIn: dotRect.insetBy(dx: 0.25, dy: 0.25))
-        stroke.lineWidth = 0.5
-        stroke.stroke()
-        img.unlockFocus()
-        img.isTemplate = false
-        return img
+        Settings { EmptyView() }
     }
 }
 
 class FileWatcherManager: ObservableObject {
     @Published var isMonitoring: Bool {
         didSet {
+            guard oldValue != isMonitoring else { return }
             UserDefaults.standard.set(isMonitoring, forKey: "isMonitoring")
         }
     }
@@ -244,6 +251,15 @@ class FileWatcherManager: ObservableObject {
                                   options: [.withSecurityScope],
                                   relativeTo: nil,
                                   bookmarkDataIsStale: &isStale) {
+                if isStale {
+                    _ = url.startAccessingSecurityScopedResource()
+                    if let fresh = try? url.bookmarkData(options: [.withSecurityScope],
+                                                        includingResourceValuesForKeys: nil,
+                                                        relativeTo: nil) {
+                        UserDefaults.standard.set(fresh, forKey: monitoredFolderBookmarkKey)
+                    }
+                    url.stopAccessingSecurityScopedResource()
+                }
                 return url
             }
         }
@@ -262,6 +278,16 @@ class FileWatcherManager: ObservableObject {
                                                 relativeTo: nil)
             UserDefaults.standard.set(bookmark, forKey: monitoredFolderBookmarkKey)
         } catch {
+            NSLog("PDFUnlocker: failed to create security-scoped bookmark for %@: %@",
+                  url.path, error.localizedDescription)
+            DispatchQueue.main.async {
+                let alert = NSAlert()
+                alert.messageText = "Couldn't use that folder"
+                alert.informativeText = "PDF Unlocker can't get permission to watch \"\(url.lastPathComponent)\". Try a different folder.\n\n\(error.localizedDescription)"
+                alert.alertStyle = .warning
+                alert.addButton(withTitle: "OK")
+                alert.runModal()
+            }
             return
         }
 
@@ -364,8 +390,8 @@ func processPDF(fileName: String, manager: FileWatcherManager? = nil) {
     }
 
     if pdfDocument.unlock(withPassword: "") {
+        manager?.markProcessed(path: fileURL.path)
         if saveUnlockedPDF(originalURL: fileURL, unlockedDocument: pdfDocument) {
-            manager?.markProcessed(path: fileURL.path)
             DispatchQueue.main.async {
                 NSWorkspace.shared.open(fileURL)
             }
@@ -375,8 +401,8 @@ func processPDF(fileName: String, manager: FileWatcherManager? = nil) {
 
     for password in passwords {
         if pdfDocument.unlock(withPassword: password) {
+            manager?.markProcessed(path: fileURL.path)
             if saveUnlockedPDF(originalURL: fileURL, unlockedDocument: pdfDocument) {
-                manager?.markProcessed(path: fileURL.path)
                 DispatchQueue.main.async {
                     NSWorkspace.shared.open(fileURL)
                 }

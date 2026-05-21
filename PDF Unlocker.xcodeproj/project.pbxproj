@@ -14,29 +14,10 @@
 		10F241B22C55189F00777C96 /* SettingsAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 10F241B12C55189F00777C96 /* SettingsAccess */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		103C7D432C4CF5C6003104D5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 103C7D292C4CF5C5003104D5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 103C7D302C4CF5C5003104D5;
-			remoteInfo = "PDF Unlocker";
-		};
-		103C7D4D2C4CF5C6003104D5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 103C7D292C4CF5C5003104D5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 103C7D302C4CF5C5003104D5;
-			remoteInfo = "PDF Unlocker";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		103C7D312C4CF5C5003104D5 /* PDF Unlocker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PDF Unlocker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		103C7D342C4CF5C5003104D5 /* PDF_UnlockerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDF_UnlockerApp.swift; sourceTree = "<group>"; };
 		103C7D3D2C4CF5C6003104D5 /* PDF_Unlocker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PDF_Unlocker.entitlements; sourceTree = "<group>"; };
-		103C7D422C4CF5C6003104D5 /* PDF UnlockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PDF UnlockerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		103C7D4C2C4CF5C6003104D5 /* PDF UnlockerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PDF UnlockerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10E035582E8EB051000F1CF3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -48,20 +29,6 @@
 				10F241B22C55189F00777C96 /* SettingsAccess in Frameworks */,
 				10D1B21B2C4E391700039D1F /* LaunchAtLogin in Frameworks */,
 				1079E4382C4E93BB00A737A8 /* FileWatcher in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		103C7D3F2C4CF5C6003104D5 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		103C7D492C4CF5C6003104D5 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,8 +47,6 @@
 			isa = PBXGroup;
 			children = (
 				103C7D312C4CF5C5003104D5 /* PDF Unlocker.app */,
-				103C7D422C4CF5C6003104D5 /* PDF UnlockerTests.xctest */,
-				103C7D4C2C4CF5C6003104D5 /* PDF UnlockerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,42 +86,6 @@
 			productReference = 103C7D312C4CF5C5003104D5 /* PDF Unlocker.app */;
 			productType = "com.apple.product-type.application";
 		};
-		103C7D412C4CF5C6003104D5 /* PDF UnlockerTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 103C7D592C4CF5C6003104D5 /* Build configuration list for PBXNativeTarget "PDF UnlockerTests" */;
-			buildPhases = (
-				103C7D3E2C4CF5C6003104D5 /* Sources */,
-				103C7D3F2C4CF5C6003104D5 /* Frameworks */,
-				103C7D402C4CF5C6003104D5 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				103C7D442C4CF5C6003104D5 /* PBXTargetDependency */,
-			);
-			name = "PDF UnlockerTests";
-			productName = "PDF UnlockerTests";
-			productReference = 103C7D422C4CF5C6003104D5 /* PDF UnlockerTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		103C7D4B2C4CF5C6003104D5 /* PDF UnlockerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 103C7D5C2C4CF5C6003104D5 /* Build configuration list for PBXNativeTarget "PDF UnlockerUITests" */;
-			buildPhases = (
-				103C7D482C4CF5C6003104D5 /* Sources */,
-				103C7D492C4CF5C6003104D5 /* Frameworks */,
-				103C7D4A2C4CF5C6003104D5 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				103C7D4E2C4CF5C6003104D5 /* PBXTargetDependency */,
-			);
-			name = "PDF UnlockerUITests";
-			productName = "PDF UnlockerUITests";
-			productReference = 103C7D4C2C4CF5C6003104D5 /* PDF UnlockerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -169,14 +98,6 @@
 				TargetAttributes = {
 					103C7D302C4CF5C5003104D5 = {
 						CreatedOnToolsVersion = 15.4;
-					};
-					103C7D412C4CF5C6003104D5 = {
-						CreatedOnToolsVersion = 15.4;
-						TestTargetID = 103C7D302C4CF5C5003104D5;
-					};
-					103C7D4B2C4CF5C6003104D5 = {
-						CreatedOnToolsVersion = 15.4;
-						TestTargetID = 103C7D302C4CF5C5003104D5;
 					};
 				};
 			};
@@ -199,8 +120,6 @@
 			projectRoot = "";
 			targets = (
 				103C7D302C4CF5C5003104D5 /* PDF Unlocker */,
-				103C7D412C4CF5C6003104D5 /* PDF UnlockerTests */,
-				103C7D4B2C4CF5C6003104D5 /* PDF UnlockerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -211,20 +130,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				10E035592E8EB051000F1CF3 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		103C7D402C4CF5C6003104D5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		103C7D4A2C4CF5C6003104D5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,34 +144,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		103C7D3E2C4CF5C6003104D5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		103C7D482C4CF5C6003104D5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		103C7D442C4CF5C6003104D5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 103C7D302C4CF5C5003104D5 /* PDF Unlocker */;
-			targetProxy = 103C7D432C4CF5C6003104D5 /* PBXContainerItemProxy */;
-		};
-		103C7D4E2C4CF5C6003104D5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 103C7D302C4CF5C5003104D5 /* PDF Unlocker */;
-			targetProxy = 103C7D4D2C4CF5C6003104D5 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		103C7D542C4CF5C6003104D5 /* Debug */ = {
@@ -400,7 +278,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = F2FZ479BP3;
@@ -419,7 +297,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.rtcamp.PDFUnlocker;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-Unlocker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -435,7 +313,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = F2FZ479BP3;
@@ -454,82 +332,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = com.rtcamp.PDFUnlocker;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-Unlocker";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		103C7D5A2C4CF5C6003104D5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = FPZ2S6HLD9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-UnlockerTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PDF Unlocker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PDF Unlocker";
-			};
-			name = Debug;
-		};
-		103C7D5B2C4CF5C6003104D5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = FPZ2S6HLD9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-UnlockerTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PDF Unlocker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PDF Unlocker";
-			};
-			name = Release;
-		};
-		103C7D5D2C4CF5C6003104D5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = FPZ2S6HLD9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-UnlockerUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "PDF Unlocker";
-			};
-			name = Debug;
-		};
-		103C7D5E2C4CF5C6003104D5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = FPZ2S6HLD9;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-UnlockerUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "PDF Unlocker";
 			};
 			name = Release;
 		};
@@ -550,24 +356,6 @@
 			buildConfigurations = (
 				103C7D572C4CF5C6003104D5 /* Debug */,
 				103C7D582C4CF5C6003104D5 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		103C7D592C4CF5C6003104D5 /* Build configuration list for PBXNativeTarget "PDF UnlockerTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				103C7D5A2C4CF5C6003104D5 /* Debug */,
-				103C7D5B2C4CF5C6003104D5 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		103C7D5C2C4CF5C6003104D5 /* Build configuration list for PBXNativeTarget "PDF UnlockerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				103C7D5D2C4CF5C6003104D5 /* Debug */,
-				103C7D5E2C4CF5C6003104D5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
