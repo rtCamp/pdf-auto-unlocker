@@ -164,8 +164,8 @@ final class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
             ])
             dotView = v
         }
-        dotView?.layer?.backgroundColor =
-            (watcher.isMonitoring ? NSColor.systemGreen : NSColor.systemRed).cgColor
+        dotView?.layer?.backgroundColor = NSColor.systemRed.cgColor
+        dotView?.isHidden = watcher.isMonitoring
     }
 
     private func configureMenu() {
