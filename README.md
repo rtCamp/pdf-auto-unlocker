@@ -1,45 +1,36 @@
-# PDF Unlocker App
+<p align="center">
+  <img src="PDF%20Unlocker/Assets.xcassets/AppIcon.appiconset/256-mac.png" width="128" alt="PDF Auto Unlocker">
+</p>
 
-This is a menubar macOS app designed to unlock encrypted PDF automatically using a known list of passwords.
+<h1 align="center">PDF Auto Unlocker</h1>
 
-If you receive encrypted PDFs such as bank/credit card/investment statements, you can store a list of their passwords in this app's settings.
+A menubar macOS app that automatically unlocks encrypted PDFs using a saved list of passwords.
 
-<img src="https://github.com/user-attachments/assets/352c1fa2-87f8-4565-b76a-32286eee7054" height="500" alt="PDF Unlocker Settings">
+If you receive encrypted PDFs such as bank, credit card, or investment statements, store their passwords once and let the app open them for you.
 
-Once you turn on "Start PDF Monitoring", it will keep running in the background and will automatically launch on next reboot.
+<h3 align="center">Settings</h3>
+
+<p align="center">
+  <img width="432" height="684" alt="PDF Auto Unlocker Settings" src="https://github.com/user-attachments/assets/5fe9849c-b2c1-4175-9328-d690bc25e9ee" />
+</p>
+
+Once you turn on **Start PDF Monitoring**, the app keeps running in the background and relaunches at login.
+
+## Features
+
+- **Keychain storage** — passwords saved securely in the macOS Keychain.
+- **iCloud Keychain sync** — passwords follow you across Macs signed into the same iCloud account.
+- **Customizable monitored folder** — watch any folder you choose, not just Downloads.
+- **Open PDFs even if not encrypted** — optional toggle to auto-open every new PDF in the watched folder.
+- **Hardened Runtime + Apple Developer signing** — passes Gatekeeper on signed builds.
 
 ## Installation
 
-1. [Download PDF-Unlocker.zip](https://github.com/rahul286/PDF-Unlocker/releases/latest/download/PDF-Unlocker.zip)
-2. Unzip file. It will show `PDF Unlocker.app`.
-3. Drag and drop `PDF Unlocker.app` to your `Applications` folder.
-4. Double click `PDF Unlocker.app` to launch menu bar app.
-5. Click menu bar app icon to access settings to store password and start PDF monitoring.
-
-### Security Warning
-
-Since I haven't signed the app, you may see a warning "PDF Unlocker.app" can't be opened because Apple cannot check it for malicious software."
-
-<img src="https://github.com/user-attachments/assets/9d280282-d65c-4aca-a7e6-bdf35b1c161c" height="400" alt="First Warning">
-
-Go to `System Settings` >> `Privacy & Security` >> `Security` section. 
-
-You will see ""PDF Unlocker.app" was blocked from use because it is not from an identified developer."
-
-Click "**Open Anyway**".
-
-<img src="https://github.com/user-attachments/assets/d8336f68-f328-4bc3-aba1-f480acdc1037" height="600" alt="Privacy & Security Settings">
-
-Launch again. This time click "**Open**".
-
-<img src="https://github.com/user-attachments/assets/3e444675-384e-4b3a-8533-3a2a5f2c284f" height="400" alt="Second Warning">
-
-## Known Issue
-
-- [ ] Find a way to sign/notarize app without paying for Apple's developer account.
-- [x] You need to quit and relaunch app after saving settings to start monitoring.
-- [x] Settings window sometimes doesn't come to front. Please check all windows.
-- [ ] Fix menu bar icon size. Also, set it to app icon image.
+1. [Download PDF-Auto-Unlocker.zip](https://github.com/rtCamp/pdf-auto-unlocker/releases/latest/download/PDF-Auto-Unlocker.zip)
+2. Unzip the file. You'll see `PDF Auto Unlocker.app`.
+3. Drag `PDF Auto Unlocker.app` into your `Applications` folder.
+4. Double click `PDF Auto Unlocker.app` to launch the menu bar app.
+5. Click the menu bar icon to open Settings, add passwords, choose a folder, and start monitoring.
 
 ## Credits
 
@@ -47,5 +38,3 @@ Launch again. This time click "**Open**".
 * [FileWatcher](https://github.com/eonist/FileWatcher) by eonist
 * [SettingsAccess](https://github.com/orchetect/SettingsAccess) by orchetect
 * [Unlock App Icon](https://thenounproject.com/icon/unlock-89653/) by Noun Project
-* ChatGPT and Gemini 🤖
-
