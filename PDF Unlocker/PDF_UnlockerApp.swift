@@ -494,6 +494,7 @@ struct PasswordTextEditor: NSViewRepresentable {
         textView.isAutomaticLinkDetectionEnabled = false
         textView.isContinuousSpellCheckingEnabled = false
         textView.allowsUndo = true
+        textView.insertionPointColor = .labelColor
         textView.font = .systemFont(ofSize: 13)
         textView.textContainerInset = NSSize(width: 5, height: 5)
         textView.drawsBackground = true
