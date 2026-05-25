@@ -15,7 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		103C7D312C4CF5C5003104D5 /* PDF Unlocker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PDF Unlocker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		103C7D312C4CF5C5003104D5 /* PDF Auto Unlocker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PDF Auto Unlocker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		103C7D342C4CF5C5003104D5 /* PDF_UnlockerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDF_UnlockerApp.swift; sourceTree = "<group>"; };
 		103C7D3D2C4CF5C6003104D5 /* PDF_Unlocker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PDF_Unlocker.entitlements; sourceTree = "<group>"; };
 		10E035582E8EB051000F1CF3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -46,7 +46,7 @@
 		103C7D322C4CF5C5003104D5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				103C7D312C4CF5C5003104D5 /* PDF Unlocker.app */,
+				103C7D312C4CF5C5003104D5 /* PDF Auto Unlocker.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,7 +83,7 @@
 				10F241B12C55189F00777C96 /* SettingsAccess */,
 			);
 			productName = "PDF Unlocker";
-			productReference = 103C7D312C4CF5C5003104D5 /* PDF Unlocker.app */;
+			productReference = 103C7D312C4CF5C5003104D5 /* PDF Auto Unlocker.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -278,7 +278,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = F2FZ479BP3;
@@ -288,6 +288,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PDF-Unlocker-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "PDF Auto Unlocker";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -298,7 +300,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-Unlocker";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "PDF Auto Unlocker";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -313,7 +315,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = F2FZ479BP3;
@@ -323,6 +325,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "PDF-Unlocker-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "PDF Auto Unlocker";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -333,7 +337,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.rahul286.PDF-Unlocker";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "PDF Auto Unlocker";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};

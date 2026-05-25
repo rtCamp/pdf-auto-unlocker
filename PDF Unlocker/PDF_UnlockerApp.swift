@@ -146,7 +146,7 @@ final class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
     private func refresh() {
         guard let button = statusItem.button else { return }
         let symbolName = "lock.doc"
-        let img = NSImage(systemSymbolName: symbolName, accessibilityDescription: "PDF Unlocker")
+        let img = NSImage(systemSymbolName: symbolName, accessibilityDescription: "PDF Auto Unlocker")
         img?.isTemplate = true
         button.image = img
 
@@ -186,7 +186,7 @@ final class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
                 backing: .buffered,
                 defer: false
             )
-            window.title = "PDF Unlocker Settings"
+            window.title = "PDF Auto Unlocker Settings"
             window.contentView = NSHostingView(rootView: SettingsView(fileWatcherManager: watcher))
             window.isReleasedWhenClosed = false
             window.center()
@@ -200,7 +200,7 @@ final class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
 }
 
 @main
-struct PDFUnlockerApp: App {
+struct PDFAutoUnlockerApp: App {
     @StateObject private var fileWatcherManager: FileWatcherManager
     @StateObject private var statusBar: StatusBarController
 
@@ -288,12 +288,10 @@ class FileWatcherManager: ObservableObject {
                                                 relativeTo: nil)
             UserDefaults.standard.set(bookmark, forKey: monitoredFolderBookmarkKey)
         } catch {
-            NSLog("PDFUnlocker: failed to create security-scoped bookmark for %@: %@",
-                  url.path, error.localizedDescription)
             DispatchQueue.main.async {
                 let alert = NSAlert()
                 alert.messageText = "Couldn't use that folder"
-                alert.informativeText = "PDF Unlocker can't get permission to watch \"\(url.lastPathComponent)\". Try a different folder.\n\n\(error.localizedDescription)"
+                alert.informativeText = "PDF Auto Unlocker can't get permission to watch \"\(url.lastPathComponent)\". Try a different folder.\n\n\(error.localizedDescription)"
                 alert.alertStyle = .warning
                 alert.addButton(withTitle: "OK")
                 alert.runModal()
