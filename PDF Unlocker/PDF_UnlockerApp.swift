@@ -195,6 +195,7 @@ final class StatusBarController: NSObject, ObservableObject, NSWindowDelegate {
         }
         NSApp.activate(ignoringOtherApps: true)
         settingsWindow?.makeKeyAndOrderFront(nil)
+        settingsWindow?.orderFrontRegardless()
     }
 }
 
@@ -254,8 +255,8 @@ class FileWatcherManager: ObservableObject {
                 if isStale {
                     _ = url.startAccessingSecurityScopedResource()
                     if let fresh = try? url.bookmarkData(options: [.withSecurityScope],
-                                                        includingResourceValuesForKeys: nil,
-                                                        relativeTo: nil) {
+                                                         includingResourceValuesForKeys: nil,
+                                                         relativeTo: nil) {
                         UserDefaults.standard.set(fresh, forKey: monitoredFolderBookmarkKey)
                     }
                     url.stopAccessingSecurityScopedResource()
@@ -267,8 +268,17 @@ class FileWatcherManager: ObservableObject {
     }
 
     static func defaultDownloadsURL() -> URL {
-        let realHome = NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory()
-        return URL(fileURLWithPath: realHome).appendingPathComponent("Downloads")
+        if let pw = getpwuid(getuid()), let cstr = pw.pointee.pw_dir {
+            let realHome = String(cString: cstr)
+            return URL(fileURLWithPath: realHome).appendingPathComponent("Downloads")
+        }
+        if let url = try? FileManager.default.url(for: .downloadsDirectory,
+                                                  in: .userDomainMask,
+                                                  appropriateFor: nil,
+                                                  create: false) {
+            return url
+        }
+        return URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Downloads")
     }
 
     func setMonitoredFolder(_ url: URL) {
@@ -437,6 +447,91 @@ func saveUnlockedPDF(originalURL: URL, unlockedDocument: PDFDocument) -> Bool {
     }
 }
 
+final class AlwaysEmphasizedLayoutManager: NSLayoutManager {
+    override func fillBackgroundRectArray(_ rectArray: UnsafePointer<NSRect>,
+                                          count rectCount: Int,
+                                          forCharacterRange charRange: NSRange,
+                                          color: NSColor) {
+        super.fillBackgroundRectArray(rectArray,
+                                      count: rectCount,
+                                      forCharacterRange: charRange,
+                                      color: NSColor.systemBlue.withAlphaComponent(0.3))
+    }
+}
+
+final class AlwaysEmphasizedTextView: NSTextView {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    override var selectedTextAttributes: [NSAttributedString.Key: Any] {
+        get {
+            [
+                .backgroundColor: NSColor.systemBlue.withAlphaComponent(0.3),
+                .foregroundColor: NSColor.selectedTextColor
+            ]
+        }
+        set { super.selectedTextAttributes = newValue }
+    }
+}
+
+struct PasswordTextEditor: NSViewRepresentable {
+    @Binding var text: String
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSScrollView()
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
+        scrollView.borderType = .noBorder
+        scrollView.drawsBackground = false
+
+        let textView = AlwaysEmphasizedTextView()
+        textView.textContainer?.replaceLayoutManager(AlwaysEmphasizedLayoutManager())
+        textView.delegate = context.coordinator
+        textView.isEditable = true
+        textView.isSelectable = true
+        textView.isRichText = false
+        textView.isAutomaticQuoteSubstitutionEnabled = false
+        textView.isAutomaticDashSubstitutionEnabled = false
+        textView.isAutomaticTextReplacementEnabled = false
+        textView.isAutomaticSpellingCorrectionEnabled = false
+        textView.isAutomaticLinkDetectionEnabled = false
+        textView.isContinuousSpellCheckingEnabled = false
+        textView.allowsUndo = true
+        textView.font = .systemFont(ofSize: 13)
+        textView.textContainerInset = NSSize(width: 5, height: 5)
+        textView.drawsBackground = true
+        textView.backgroundColor = .textBackgroundColor
+        textView.isVerticallyResizable = true
+        textView.isHorizontallyResizable = false
+        textView.autoresizingMask = [.width]
+        textView.minSize = NSSize(width: 0, height: 0)
+        textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        textView.string = text
+
+        scrollView.documentView = textView
+        return scrollView
+    }
+
+    func updateNSView(_ scrollView: NSScrollView, context: Context) {
+        guard let textView = scrollView.documentView as? NSTextView else { return }
+        if textView.string != text {
+            let selectedRanges = textView.selectedRanges
+            textView.string = text
+            textView.selectedRanges = selectedRanges
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    final class Coordinator: NSObject, NSTextViewDelegate {
+        var parent: PasswordTextEditor
+        init(_ parent: PasswordTextEditor) { self.parent = parent }
+        func textDidChange(_ notification: Notification) {
+            guard let textView = notification.object as? NSTextView else { return }
+            parent.text = textView.string
+        }
+    }
+}
+
 struct SettingsView: View {
     @ObservedObject var fileWatcherManager: FileWatcherManager
     @State private var passwordList: String = PasswordStore.load().joined(separator: "\n")
@@ -449,11 +544,9 @@ struct SettingsView: View {
                 .padding(.top, 16)
                 .padding(.horizontal, 20)
 
-            TextEditor(text: $passwordList)
+            PasswordTextEditor(text: $passwordList)
                 .border(Color.gray.opacity(0.5), width: 1)
                 .frame(minWidth: 220, minHeight: 220)
-                .font(.system(size: 13))
-                .lineSpacing(1)
                 .padding([.top, .bottom], 5)
                 .padding([.leading, .trailing], 20)
 
@@ -529,6 +622,11 @@ struct SettingsView: View {
         panel.prompt = "Choose"
         if let current = fileWatcherManager.monitoredFolderURL {
             panel.directoryURL = current
+        } else if let downloads = try? FileManager.default.url(for: .downloadsDirectory,
+                                                               in: .userDomainMask,
+                                                               appropriateFor: nil,
+                                                               create: false) {
+            panel.directoryURL = downloads
         }
         if panel.runModal() == .OK, let url = panel.url {
             fileWatcherManager.setMonitoredFolder(url)
