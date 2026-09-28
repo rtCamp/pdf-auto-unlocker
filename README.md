@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://apps.apple.com/app/pdf-auto-unlocker/id6771767483">
-    <img src="https://tools.applemarketingtools.com/api/badges/download-on-the-mac-app-store/black/en-us" height="40" alt="Download on the Mac App Store">
+    <img src="https://img.shields.io/badge/Download_on_the-Mac_App_Store-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download on the Mac App Store">
   </a>
 </p>
 
