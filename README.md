@@ -4,6 +4,12 @@
 
 <h1 align="center">PDF Auto Unlocker</h1>
 
+<p align="center">
+  <a href="https://apps.apple.com/app/pdf-auto-unlocker/id6771767483">
+    <img src="https://tools.applemarketingtools.com/api/badges/download-on-the-mac-app-store/black/en-us" height="40" alt="Download on the Mac App Store">
+  </a>
+</p>
+
 A menubar macOS app that automatically unlocks encrypted PDFs using a saved list of passwords.
 
 If you receive encrypted PDFs such as bank, credit card, or investment statements, store their passwords once and let the app open them for you.
@@ -25,6 +31,12 @@ Once you turn on **Start PDF Monitoring**, the app keeps running in the backgrou
 - **Hardened Runtime + Apple Developer signing** — passes Gatekeeper on signed builds.
 
 ## Installation
+
+### Mac App Store (recommended)
+
+[Download PDF Auto Unlocker from the Mac App Store](https://apps.apple.com/app/pdf-auto-unlocker/id6771767483).
+
+### Direct download
 
 1. [Download PDF-Auto-Unlocker.zip](https://github.com/rtCamp/pdf-auto-unlocker/releases/latest/download/PDF-Auto-Unlocker.zip)
 2. Unzip the file. You'll see `PDF Auto Unlocker.app`.
